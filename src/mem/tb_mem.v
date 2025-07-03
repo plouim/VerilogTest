@@ -64,7 +64,7 @@ module mem_tb;
     // ================= 테스트 시나리오 =================
     initial begin
         // Waveform(VCD) 파일 생성
-        $dumpfile("mem.vcd");
+        $dumpfile("tb_mem.vcd");
         $dumpvars(0, mem_tb);
 
         // 신호 초기화
