@@ -44,6 +44,48 @@ wire [DATA_WIDTH-1:0] mem_wdata;
 reg  [DATA_WIDTH-1:0] mem_rdata;
 
 // ==============================
+//         WRITE FSM
+// ==============================
+// TODO
+localparam ST_WR_IDLE  = 3'b001;
+localparam ST_WR_WRITE = 3'b010;
+localparam ST_WR_RESP  = 3'b100;
+reg [2:0] nxt_state;
+reg [2:0] cur_state;
+
+// State Update
+always@(posedge i_w_aclk or negedge i_w_areset_n) begin
+    if(!i_w_areset_n) begin
+        nxt_state <= 'b0;
+        cur_state <= ST_WR_IDLE;
+    end else begin
+        cur_state <= nxt_state;
+    end
+end
+
+// Next State Logic
+always@(*) begin
+    case(cur_state)
+        ST_WR_IDLE: begin
+
+        end
+        ST_WR_WRITE: begin
+
+        end
+        ST_WR_RESP: begin
+
+        end
+        default: begin
+            nxt_state = ST_WRITE_IDLE;
+        end
+    endcase
+end 
+
+// ==============================
+//         READ FSM
+// ==============================
+
+// ==============================
 //         INSTANTIATION
 // ==============================
 mem #(
