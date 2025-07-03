@@ -16,39 +16,38 @@ module axi2mem #(
     // =======================================
     // ============== OUTPUT IF ==============
     // =======================================
-    // ============== OUTPUT IF ==============
     // -------------- Global Signal --------------
-    output wire ACLK   ,
-    output wire ARESETn,
+    output wire o_w_aclk    ,
+    output wire o_w_areset_n,
     // -------------- AW CHANNEL --------------
-    output wire                  AWVALID,
-    output wire                  AWREADY,
-    output wire [ADDR_WIDTH-1:0] AWADDR ,
-    //output wire [7:0] AWLEN  , // AXI4 Full
-    //output wire [2:0] AWSIZE , // AXI4 Full
-    //output wire [1:0] AWBURST, // AXI4 Full
+    output wire                  o_w_awvalid,
+    output wire                  o_w_awready,
+    output wire [ADDR_WIDTH-1:0] o_w_awaddr ,
+    //output wire [7:0] o_w_wlen  , // AXI4 Full
+    //output wire [2:0] o_w_wsize , // AXI4 Full
+    //output wire [1:0] o_w_wburst, // AXI4 Full
     // -------------- W CHANNEL --------------
-    output wire                  WVALID,
-    output wire                  WREADY,
-    output wire [DATA_WIDTH-1:0] WDATA ,
+    output wire                  o_w_wvalid,
+    output wire                  o_w_wready,
+    output wire [DATA_WIDTH-1:0] o_w_wdata ,
     //output wire [DATA_WIDTH/8-1:0]WSTRB , // AXI4 Full
     //output wire WLAST , // AXI4 Full
     // -------------- B CHANNEL --------------
-    output wire       BVALID,
-    output wire       BREADY,
-    output wire [1:0] BRESP ,
+    output wire       o_w_bvalid,
+    output wire       o_w_bready,
+    output wire [1:0] o_w_bresp ,
     // -------------- AR CHANNEL --------------
-    output wire                  ARVALID,
-    output wire                  ARREADY,
-    output wire [ADDR_WIDTH-1:0] ARADDR ,
-    //output wire [7:0] ARLEN  , // AXI4 Full
-    //output wire [2:0] ARSIZE , // AXI4 Full
-    //output wire [1:0] ARBURST, // AXI4 Full
+    output wire                  o_w_arvalid,
+    output wire                  o_w_arready,
+    output wire [ADDR_WIDTH-1:0] o_w_araddr ,
+    //output wire [7:0] o_w_arlen  , // AXI4 Full
+    //output wire [2:0] o_w_arsize , // AXI4 Full
+    //output wire [1:0] o_w_arburst, // AXI4 Full
     // -------------- R CHANNEL --------------
     //output wire RLAST, // AXI4 Full
-    output wire                 RVALID,
-    output wire                 RREADY,
-    output wire [1:0]           RRESP ,
-    output wire [DATA_WIDTH-1:0] RDATA
+    output wire                  o_w_rvalid,
+    output wire                  o_w_rready,
+    output wire [1:0]            o_w_rresp ,
+    output wire [DATA_WIDTH-1:0] o_w_rdata
 );
 endmodule
