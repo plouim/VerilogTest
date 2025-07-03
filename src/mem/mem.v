@@ -3,10 +3,10 @@ module mem #(
     parameter DATA_WIDTH=8,
     parameter DEPTH=1<<ADDR_WIDTH
 ) (
-    input  wire                  i_w_clk,
-    input  wire                  i_w_cs,
-    input  wire                  i_w_we,
-    input  wire [ADDR_WIDTH-1:0] i_w_addr,
+    input  wire                  i_w_clk  ,
+    input  wire                  i_w_cs   ,
+    input  wire                  i_w_we   ,
+    input  wire [ADDR_WIDTH-1:0] i_w_addr ,
     input  wire [DATA_WIDTH-1:0] i_w_wdata,
     output reg  [DATA_WIDTH-1:0] o_w_rdata
 );
