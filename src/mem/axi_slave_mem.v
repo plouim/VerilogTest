@@ -1,3 +1,8 @@
+`define OKAY 2'b00
+`define EXOKAY 2'b01
+`define SLVERR 2'b10
+`define DECERR 2'b11
+
 module axi2mem #(
     parameter ADDR_WIDTH=32,
     parameter DATA_WIDTH=32
@@ -39,17 +44,19 @@ module axi2mem #(
 
 wire                  mem_cs   ;
 wire                  mem_we   ;
-wire [ADDR_WIDTH-1:0] mem_addr ;
-wire [DATA_WIDTH-1:0] mem_wdata;
+reg  [ADDR_WIDTH-1:0] mem_addr ;
+reg  [DATA_WIDTH-1:0] mem_wdata;
 reg  [DATA_WIDTH-1:0] mem_rdata;
 
 // ==============================
 //         WRITE FSM
 // ==============================
 // TODO
-localparam ST_WR_IDLE  = 3'b001;
-localparam ST_WR_WRITE = 3'b010;
-localparam ST_WR_RESP  = 3'b100;
+localparam ST_WR_IDLE  = 5'b00001;
+localparam ST_WR_AWRDY = 5'b00010;
+localparam ST_WR_WRDY  = 5'b00100;
+localparam ST_WR_WRITE = 5'b01000;
+localparam ST_WR_RESP  = 5'b10000;
 reg [2:0] nxt_state;
 reg [2:0] cur_state;
 
@@ -67,15 +74,90 @@ end
 always@(*) begin
     case(cur_state)
         ST_WR_IDLE: begin
-
+            // Output Logic
+            o_w_awready = 1'b1;
+            o_w_wready  = 1'b1;
+            o_w_bvalid  = 1'b0;
+            // State Transition
+            if(i_w_awvalid && i_w_wvalid) begin
+                nxt_state = ST_WR_WRITE;
+                mem_addr = i_w_awaddr;
+                mem_wdata = i_w_wdata;
+            end else if(i_w_awvalid && !i_w_wvalid) begin
+                nxt_state = ST_WR_AWRDY;
+                mem_addr = i_w_awaddr;
+            end else if(!i_w_awvalid && i_w_wvalid) begin
+                nxt_state = ST_WR_WRITE;
+                mem_wdata = i_w_wdata;
+            end else begin
+                nxt_state = ST_WR_IDLE;
+            end
         end
         ST_WR_WRITE: begin
+            // Output Logic
+            o_w_awready = 1'b0;
+            o_w_wready  = 1'b0;
+            o_w_bvalid  = 1'b0;
+            // State Transition
+            mem_cs = 1'b1;
+            mem_we = 1'b1;
+            nxt_state = ST_WR_RESP;
+        end
+        ST_WR_AWRDY: begin
+            // Output Logic
+            o_w_awready = 1'b0;
+            o_w_wready  = 1'b1;
+            o_w_bvalid  = 1'b0;
+            // State Transiton
+            if(i_w_wvalid) begin
+                nxt_state = ST_WR_WRITE;
+                mem_wdata = i_w_wdata;
+            end else begin
+                nxt_state = ST_WR_AWRDY;
+            end
 
         end
+        ST_WR_WRDY: begin
+            // Output Logic
+            o_w_awready = 1'b1;
+            o_w_wready  = 1'b0;
+            o_w_bvalid  = 1'b0;
+            if(i_w_awvalid) begin
+                nxt_state = ST_WR_WRITE;
+                mem_addr = i_w_awaddr;
+            end else begin
+                nxt_state = ST_WR_AWRDY;
+            end
+        end
+
         ST_WR_RESP: begin
+            // Output Logic
+            o_w_awready = 1'b1;
+            o_w_wready  = 1'b0;
+            o_w_bvalid  = 1'b1;
+            // State Transition
+            if(i_w_bready || !i_w_wvalid || !i_w_wvalid) begin
+                // Transfer RESP
+                o_w_bresp = 2'b00
+                nxt_state = ST_WR_IDLE;
+            else if(i_w_bready || i_w_wvalid || !i_w_wvalid) begin
+                // Transfer RESP
+                nxt_state = ST_WR_AWRDY;
+            else if(i_w_bready || !i_w_wvalid || i_w_wvalid) begin
+                // Transfer RESP
+                nxt_state = ST_WR_WRDY;
+            else if(i_w_bready || i_w_wvalid || i_w_wvalid) begin
+                // Transfer RESP
+                nxt_state = ST_WR_WRITE;
+            end else begin
+                nxt_state = ST_WR_RESP;
+            end
 
         end
         default: begin
+            o_w_awready = 1'b0;
+            o_w_wready  = 1'b0;
+            o_w_bvalid  = 1'b0;
             nxt_state = ST_WRITE_IDLE;
         end
     endcase
